@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MangaVerse</title>
+        <link href="style.css" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.ico" />
+    </head>
+
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo" onclick="goHome()">
+                    <span class="logo-icon">📚</span>
+                    <span class="logo-text">MangaVerse</span>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search manga..." class="search-input">
+                    <button class="search-btn" onclick="searchContent()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="nav-links">
+                    <a href="#" onclick="goHome(); return false;" class="nav-link active" data-nav="home">Home</a>
+                    <a href="#" onclick="showCategories(); return false;" class="nav-link" data-nav="categories">Categories</a>
+                    <a href="#" onclick="showFavorites(); return false;" class="nav-link" data-nav="favorites">Favorites</a>
+                    <a href="#" onclick="showHistory(); return false;" class="nav-link" data-nav="history">History</a>
+                </nav>
+                <div class="header-actions">
+                    <button type="button" class="mode-toggle-btn" id="modeToggle" onclick="toggleMode()" title="Switch Mode" aria-label="Switch Mode">
+                        <span class="mode-icon">📚</span>
+                        <span>Manga</span>
+                    </button>
+                    <button type="button" class="action-btn" onclick="getRandomContent()" title="Random" aria-label="Random">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 3h5v5M4 20L20.2 3.8M21 16v5h-5M15 15l5.1 5.1M4 4l5 5"></path>
+                        </svg>
+                    </button>
+                    <button type="button" class="action-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Sort By</h3>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-type="popularity" onclick="setType('popularity')">Most Popular</button>
+                        <button class="filter-btn" data-type="score" onclick="setType('score')">Top Rated</button>
+                        <button class="filter-btn" data-type="start_date" onclick="setType('start_date')">Newest</button>
+                        <button class="filter-btn" data-type="favorites" onclick="setType('favorites')">Most Favorited</button>
+                    </div>
+                </div>
+                <div class="sidebar-section" id="categoriesSection">
+                    <h3 class="sidebar-title">Genres</h3>
+                    <div class="category-list" id="categoryList">
+                        <button class="category-btn active" data-category="all" onclick="setGenre(null)">All</button>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="content-area">
+                <div id="homeView" class="view active">
+                    <div class="section-header">
+                        <h2 class="section-title" id="currentViewTitle">Latest Manga</h2>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid" onclick="setView('grid')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </button>
+                            <button class="view-btn" data-view="list" onclick="setView('list')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="3" y="4" width="18" height="4"></rect>
+                                    <rect x="3" y="10" width="18" height="4"></rect>
+                                    <rect x="3" y="16" width="18" height="4"></rect>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="manga-grid" id="mangaGrid"></div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <div id="mangaDetailView" class="view">
+                    <button class="back-btn" onclick="goBack()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m15 18-6-6 6-6"></path>
+                        </svg>
+                        Back
+                    </button>
+                    <div class="manga-detail" id="mangaDetail"></div>
+                </div>
+
+
+                <div id="searchResultsView" class="view">
+                    <button class="back-btn" onclick="goHome()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m15 18-6-6 6-6"></path>
+                            </svg>
+                        Back to Home
+                    </button>
+                    <h2 class="section-title" id="searchTitle">Search Results</h2>
+                    <div class="manga-grid" id="searchResults"></div>
+                    <div class="pagination" id="searchPagination"></div>
+                </div>
+
+                <div id="favoritesView" class="view">
+                    <div class="section-header">
+                        <h2 class="section-title">My Favorites</h2>
+                        <span class="favorites-count" id="favoritesCount"></span>
+                    </div>
+                    <div class="manga-grid" id="favoritesGrid"></div>
+                </div>
+
+                <div id="historyView" class="view">
+                    <div class="section-header">
+                        <h2 class="section-title">History</h2>
+                        <button class="clear-history-btn" onclick="clearHistory()">Clear All History</button>
+                    </div>
+                    
+                    <div class="history-section">
+                        <h3 class="history-section-title">
+                            <span class="history-icon">📺</span> Watch History
+                            <span class="history-count" id="animeHistoryCount"></span>
+                        </h3>
+                        <div class="manga-grid" id="animeHistoryGrid"></div>
+                    </div>
+                    
+                    <div class="history-section">
+                        <h3 class="history-section-title">
+                            <span class="history-icon">📚</span> Reading History
+                            <span class="history-count" id="mangaHistoryCount"></span>
+                        </h3>
+                        <div class="manga-grid" id="mangaHistoryGrid"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loader">
+                <div class="loader-spinner"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+
+        <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m18 15-6-6-6 6"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
